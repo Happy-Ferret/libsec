@@ -1,6 +1,6 @@
-CC = gcc
+CC = cc
 AR = ar rcs
-CFLAGS = -O2 -Wall -Wextra -std=gnu99
+CFLAGS = -O2 -fPIC -Wall -Wextra -std=gnu99
 
 TARGET = libsec.a
 SRCS = libsec.c
