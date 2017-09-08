@@ -1,4 +1,4 @@
-CC = cc
+CC = clang
 AR = ar rcs
 CFLAGS = -O2 -fPIC -Wall -Wextra -std=gnu99
 

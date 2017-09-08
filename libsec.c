@@ -1,4 +1,9 @@
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#include <stdlib.h>
+#else
 #include <bsd/stdlib.h>
+#endif
+
 #include <string.h>
 #include <stdio.h>
 
@@ -35,15 +40,15 @@ s_sec_settings *init_libsec(const char* path) {
         sscanf(line, "%s = %s", key, value);
 
         if (strcmp(key, "min_len") == 0) {
-            settings->min_len = atol(value);
+            settings->min_len = strtol(value, NULL, 10);
         } else if (strcmp(key, "gen_len") == 0) {
-            settings->gen_len = atol(value);
+            settings->gen_len = strtol(value, NULL, 10);
         } else if (strcmp(key, "charset") == 0) {
             settings->gen_charset = strdup(value);
         } else if (strcmp(key, "wordlist") == 0) {
             settings->wordlist_path = strdup(value);
         } else if (strcmp(key, "levenshtein_distance") == 0) {
-            settings->levenshtein_min_distance = atoi(value);
+            settings->levenshtein_min_distance = strtol(value, NULL, 10);
         } else if (strcmp(key, "forbiden_typo") == 0) {
             settings->common_typos = (regex_t *)calloc(1, sizeof(regex_t));
             if (settings->common_typos == NULL) {
@@ -61,6 +66,7 @@ s_sec_settings *init_libsec(const char* path) {
     }
 
     if (check_settings(settings)) {
+        free_settings(settings);
         return NULL;
     }
 
@@ -177,6 +183,8 @@ size_t levenshtein(const char *s1, const char *s2) {
     s2len = strlen(s2);
     size_t column[s1len+1];
 
+    bzero(column, (s1len + 1) * sizeof(size_t));
+
     for (y = 1; y <= s1len; ++y)
         column[y] = y;
     for (x = 1; x <= s2len; ++x) {
@@ -187,6 +195,7 @@ size_t levenshtein(const char *s1, const char *s2) {
             lastdiag = olddiag;
         }
     }
+
     return(column[s1len]);
 }
 
